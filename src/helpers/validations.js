@@ -5,8 +5,12 @@ const validStrig = (data) => typeof data === 'string' || data instanceof String
 const validEmail = (mail) => {
   const emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
 
-  if (!validStrig(mail) || !emailRegex.test(mail)) {
+  if (!validStrig(mail)) {
     throw new Error('the email must be type string.')
+  }
+
+  if (!emailRegex.test(mail)) {
+    throw new Error('invalid email.')
   }
 
   return mail
@@ -39,4 +43,16 @@ const validAndHashedPassword = async (password, repeatPassword) => {
   return passwordHash
 }
 
-module.exports = { validEmail, validName, validAndHashedPassword }
+const validRole = (role) => {
+  if (!validStrig(role)) {
+    throw new Error('role must be string type.')
+  }
+
+  if (!(role === 'reviewer' || role === 'admin')) {
+    throw new Error('role must be reviewer or admin')
+  }
+
+  return role
+}
+
+module.exports = { validEmail, validName, validAndHashedPassword, validRole }
