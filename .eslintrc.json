@@ -13,6 +13,7 @@
     "no-console": 0, // habilita console.log
     "semi": ["error", "never"], // nunca ;
     "object-curly-newline": "off",
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "comma-dangle": 0
   }
 }

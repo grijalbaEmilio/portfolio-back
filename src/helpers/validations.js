@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs')
+const { saveImg, imgPath } = require('./image.torage')
 
 const validStrig = (data) => typeof data === 'string' || data instanceof String
 
@@ -55,4 +56,66 @@ const validRole = (role) => {
   return role
 }
 
-module.exports = { validEmail, validName, validAndHashedPassword, validRole }
+// projects validations
+
+const validUrl = (url) => {
+  // eslint-disable-next-line operator-linebreak
+  const expresionRegex =
+    // eslint-disable-next-line no-useless-escape
+    /^(ht|f)tps?:\/\/\w+([\.\-\w]+)?\.[a-z]{2,10}(:\d{2,5})?(\/.*)?$/
+
+  if (!validStrig(url) || !expresionRegex.test(url)) {
+    throw new Error('URL no valid.')
+  }
+
+  return url
+}
+
+const validTitle = (title) => {
+  if (!validStrig(title)) {
+    throw new Error('title no valid')
+  }
+
+  return title
+}
+
+const validDescription = (description) => {
+  if (!validStrig(description)) {
+    throw new Error('description no valid')
+  }
+
+  return description
+}
+
+const validTecnologiesConverseArray = (tecnologies) => {
+  try {
+    const tecnologiesArray = new Array(...JSON.parse(tecnologies))
+    return tecnologiesArray
+  } catch (err) {
+    throw new Error(
+      'tecnologies must be string but content array, example "["tec1", "tec2"]"'
+    )
+  }
+}
+
+const validImgGenereUrlImg = (imgFile) => {
+  const expresionRegex = /.jpg|.png|.gif|.tiff|.psd|.bmp/
+  if (!expresionRegex.test(imgFile.name)) {
+    throw new Error('img no valid.')
+  }
+
+  saveImg(imgFile)
+  return imgPath(imgFile)
+}
+
+module.exports = {
+  validEmail,
+  validName,
+  validAndHashedPassword,
+  validRole,
+  validUrl,
+  validTitle,
+  validDescription,
+  validTecnologiesConverseArray,
+  validImgGenereUrlImg,
+}

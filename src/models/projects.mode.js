@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const proyectSchema = mongoose.Schema({
+const projectSchema = mongoose.Schema({
   imgUrl: {
     type: String,
     require: true,
@@ -27,4 +27,4 @@ const proyectSchema = mongoose.Schema({
   },
 })
 
-module.exports = mongoose.model('proyects', proyectSchema)
+module.exports = mongoose.model('projects', projectSchema)

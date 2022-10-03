@@ -68,7 +68,6 @@ async function getOneUser(id) {
 
 async function deleteOneUser(id) {
   const userDelete = await Schema.findOneAndDelete({ _id: id })
-  console.log(userDelete)
   if (!userDelete) {
     throw new Error('user not found')
   }
