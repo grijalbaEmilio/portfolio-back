@@ -1,85 +1,82 @@
 const Schema = require('../models/comments.model')
+const { getOneUser } = require('./users.controller')
+const { validContent, validLikes } = require('../helpers/validations')
 
-function postComments(req, res) {
-  const { authorId, parentId, content, likes } = req.body
+require('dotenv').config()
 
+async function getOneComment(id) {
+  const commetn = await Schema.findById(id)
+
+  if (!commetn) {
+    throw new Error('comment not found')
+  }
+
+  return commetn
+}
+
+async function postComment(newComment) {
+  const { authorId, parentId, content } = newComment
   const { PORT, HOST, API_VERSION } = process.env
 
-  let parentUrl = null
+  let parentUrl
 
+  await getOneUser(authorId)
   if (parentId) {
+    await getOneComment(parentId)
     parentUrl = `${HOST}:${PORT}/api/${API_VERSION}/comments/getOneComment/${parentId}`
   }
 
-  if (authorId && content) {
-    const authorUrl = `${HOST}:${PORT}/api/${API_VERSION}/users/getOneUser/${authorId}`
-    const postDate = new Date(Date.now())
+  const commentSchema = new Schema({
+    authorUrl: `${HOST}:${PORT}/api/${API_VERSION}/users/getOneUser/${authorId}`,
+    parentUrl,
+    content: validContent(content),
+    postDate: new Date(Date.now()),
+  })
 
-    const comment = new Schema({
-      authorUrl,
-      parentUrl,
-      content,
-      likes,
-      postDate,
-    })
-    comment
-      .save()
-      .then((data) => res.status(200).json({ message: data }))
-      .catch(() => res.status(500).json({ message: 'no guardado' }))
-  } else {
-    res.status(400).json({ message: 'datos incompletos.' })
-  }
+  const commentSave = await commentSchema.save()
+
+  return commentSave
 }
 
-async function getComments(req, res) {
+async function getAllComments() {
   const comments = await Schema.find()
-  if (!comments) {
-    res.json({ message: 'comments not found' })
+  if (!comments || comments.length === 0) {
+    throw new Error('no comments')
   }
-  res.json(comments)
+
+  return comments
 }
 
-async function getOneComment(req, res) {
-  const { id } = req.params
-  Schema.findById(id, null, null, (err, comment) => {
-    if (err) {
-      res.json({ message: 'comment not found' })
-    }
-    res.json(comment)
-  })
+async function deleteComment(id) {
+  const commentDelted = await Schema.findByIdAndDelete(id)
+
+  if (!commentDelted) {
+    throw new Error('comment not exists')
+  }
+
+  return commentDelted
 }
 
-function deleteComment(req, res) {
-  const { id } = req.params
-  Schema.findByIdAndDelete({ _id: id }, null, (err, comment) => {
-    if (err) {
-      res.status(500).json({ message: 'server error' })
-    } else if (!comment) {
-      res.status(404).json({ message: 'comment not found' })
-    } else {
-      res.status(200).json({ message: 'success delete' })
-    }
-  })
-}
+async function updateComment(id, commentModified) {
+  const { content, likes } = commentModified
 
-function updateComment(req, res) {
-  const { id } = req.params
-  const { body } = req
+  let commetforUpdate = {}
+  if (content) {
+    commetforUpdate = { ...commetforUpdate, content: validContent(content) }
+  }
 
-  Schema.findByIdAndUpdate({ _id: id }, body, null, (err, comment) => {
-    if (err) {
-      res.status(500).json({ message: 'server error' })
-    } else if (!comment) {
-      res.status(404).json({ message: 'comment not found' })
-    } else {
-      res.status(200).json({ message: 'success update' })
-    }
-  })
+  if (likes) {
+    commetforUpdate = { ...commetforUpdate, likes: validLikes(likes) }
+  }
+
+  const comment = await Schema.findByIdAndUpdate(id, commetforUpdate)
+
+  return comment
 }
 
 module.exports = {
-  postComments,
-  getComments,
+  postComment,
+  getAllComments,
   getOneComment,
   deleteComment,
   updateComment,

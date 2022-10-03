@@ -3,6 +3,8 @@ const { saveImg, imgPath } = require('./image.torage')
 
 const validStrig = (data) => typeof data === 'string' || data instanceof String
 
+const validNumber = (data) => typeof data === 'number'
+
 const validEmail = (mail) => {
   const emailRegex = /^[-\w.%+]{1,64}@(?:[A-Z0-9-]{1,63}\.){1,125}[A-Z]{2,63}$/i
 
@@ -99,13 +101,35 @@ const validTecnologiesConverseArray = (tecnologies) => {
 }
 
 const validImgGenereUrlImg = (imgFile) => {
-  const expresionRegex = /.jpg|.png|.gif|.tiff|.psd|.bmp/
+  const expresionRegex = /.jpg|.png|.gif|.tiff|.psd|.bmp|.jpeg/
   if (!expresionRegex.test(imgFile.name)) {
     throw new Error('img no valid.')
   }
 
   saveImg(imgFile)
+  console.log(imgPath(imgFile))
   return imgPath(imgFile)
+}
+
+// comments validatos
+
+const validContent = (content) => {
+  if (!validStrig(content)) {
+    throw new Error('content no valid')
+  }
+
+  return content
+}
+
+const validLikes = (likes) => {
+  if (!validNumber(likes)) {
+    throw new Error('likes must be number')
+  }
+
+  if (likes < 0) {
+    throw new Error('number must be positive')
+  }
+  return likes
 }
 
 module.exports = {
@@ -118,4 +142,6 @@ module.exports = {
   validDescription,
   validTecnologiesConverseArray,
   validImgGenereUrlImg,
+  validContent,
+  validLikes,
 }

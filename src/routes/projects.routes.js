@@ -42,11 +42,10 @@ app.delete('/removeOneProject/:id', async (req, res) => {
 
 app.put('/updateOneProject/:id', async (req, res) => {
   try {
-    const proyect = await updateOneProject(
-      req.params.id,
-      req.body,
-      req.files?.img
-    )
+    const proyect = await updateOneProject(req.params.id, {
+      ...req.body,
+      img: req.files?.img,
+    })
 
     res.json({ message: 'updated project.', proyect })
   } catch (err) {

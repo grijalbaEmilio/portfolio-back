@@ -43,8 +43,8 @@ async function removeOneProject(id) {
   return projectDelete
 }
 
-async function updateOneProject(id, queryModified, img) {
-  const { title, description, demo, code, tecnologies } = queryModified
+async function updateOneProject(id, queryModified) {
+  const { title, description, demo, code, tecnologies, img } = queryModified
   let projectModified = {}
 
   if (title) {
@@ -69,7 +69,7 @@ async function updateOneProject(id, queryModified, img) {
     }
   }
   if (img) {
-    projectModified = { ...projectModified, img: validImgGenereUrlImg(img) }
+    projectModified = { ...projectModified, imgUrl: validImgGenereUrlImg(img) }
   }
 
   const project = await Schema.findByIdAndUpdate(id, projectModified)
